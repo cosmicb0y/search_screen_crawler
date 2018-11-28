@@ -1,0 +1,7 @@
+DROP TABLE keywords IF EXISTS;
+
+CREATE TABLE keywords (
+  person_id BIGINT IDENTITY NOT NULL PRIMARY KEY,
+  query VARCHAR(20),
+  section VARCHAR(20)
+);

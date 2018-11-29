@@ -64,9 +64,7 @@ public class BatchConfiguration {
         BasicDataSource source = new BasicDataSource();
 
         source.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        source.setUsername("worker");
-        source.setPassword("Hackday2018!");
-        source.setUrl("jdbc:mysql://106.10.34.6:3306/hyowon?characterEncoding=UTF-8&serverTimezone=UTC");
+
 
         return new JdbcTemplate(source);
 

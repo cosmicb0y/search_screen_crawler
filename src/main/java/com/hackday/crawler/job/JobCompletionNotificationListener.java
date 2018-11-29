@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
+// for tutorial, expected not use
 @Component
 public class JobCompletionNotificationListener extends JobExecutionListenerSupport {
 
@@ -27,10 +28,12 @@ public class JobCompletionNotificationListener extends JobExecutionListenerSuppo
         if(jobExecution.getStatus() == BatchStatus.COMPLETED) {
             log.info("!!! JOB FINISHED! Time to verify the results");
 
-            jdbcTemplate.query("SELECT query, section FROM keywords",
+            jdbcTemplate.query("SELECT area, query, type, rank FROM keywords",
                     (rs, row) -> new Keyword(
                             rs.getString(1),
-                            rs.getString(2))
+                            rs.getString(2),
+                            rs.getString(3),
+                            rs.getInt(4))
             ).forEach(person -> log.info("Found <" + person + "> in the database."));
         }
     }

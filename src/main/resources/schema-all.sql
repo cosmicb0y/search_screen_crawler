@@ -1,7 +1,15 @@
-DROP TABLE keywords IF EXISTS;
+DROP TABLE screenshots IF EXISTS;
+DROP TABLE paths IF EXISTS;
 
-CREATE TABLE keywords (
-  person_id BIGINT IDENTITY NOT NULL PRIMARY KEY,
-  query VARCHAR(20),
-  section VARCHAR(20)
+CREATE TABLE screenshots (
+  id BIGINT IDENTITY NOT NULL PRIMARY KEY,
+  area VARCHAR(20),
+  type VARCHAR(20),
+  num INT
+);
+
+CREATE TABLE paths (
+  area VARCHAR(20),
+  type VARCHAR(20),
+  path VARCHAR(100)
 );

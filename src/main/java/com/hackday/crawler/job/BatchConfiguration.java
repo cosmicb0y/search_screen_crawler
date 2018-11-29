@@ -1,6 +1,7 @@
 package com.hackday.crawler.job;
 
 import com.hackday.crawler.domain.Keyword;
+import com.hackday.crawler.domain.Screenshot;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
@@ -19,6 +20,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 
 import javax.sql.DataSource;
+import java.util.HashMap;
+import java.util.List;
 
 @EnableBatchProcessing
 @Configuration
@@ -34,10 +37,11 @@ public class BatchConfiguration {
     @Bean
     public FlatFileItemReader<Keyword> reader() {
         return new FlatFileItemReaderBuilder<Keyword>()
-                .name("personItemReader")
-                .resource(new ClassPathResource("keyword.csv"))
+                .name("keywordItemReader")
+                .resource(new ClassPathResource("sample.csv"))
+                .linesToSkip(1)
                 .delimited()
-                .names(new String[]{"query", "section"})
+                .names(new String[]{"area","query","type","rank"})
                 .fieldSetMapper(new BeanWrapperFieldSetMapper<Keyword>() {{
                     setTargetType(Keyword.class);
                 }})
@@ -45,17 +49,23 @@ public class BatchConfiguration {
     }
 
     @Bean
-    public KeywordItemProcessor processor() {
-        return new KeywordItemProcessor();
-    }
+    public HashMap<String, Boolean> checker() { return new HashMap<>(); }
 
     @Bean
-    public JdbcBatchItemWriter<Keyword> writer(DataSource dataSource) {
-        return new JdbcBatchItemWriterBuilder<Keyword>()
+    public KeywordItemProcessor processor() {
+        return new KeywordItemProcessor(checker());
+    }
+
+    //need modify
+    @Bean
+    public JdbcBatchItemWriter<List<Screenshot>> writer(DataSource dataSource) {
+
+        return new JdbcBatchItemWriterBuilder<List<Screenshot>>()
                 .itemSqlParameterSourceProvider(new BeanPropertyItemSqlParameterSourceProvider<>())
-                .sql("INSERT INTO keywords (query, section) VALUES (:query, :section)")
+                .sql("INSERT INTO screenshot (area, type, filePath, noExist) VALUES (:area, :type, :filePath, :noExist)")
                 .dataSource(dataSource)
                 .build();
+
     }
     // end::readerwriterprocessor[]
 
@@ -71,9 +81,9 @@ public class BatchConfiguration {
     }
 
     @Bean
-    public Step step1(JdbcBatchItemWriter<Keyword> writer) {
+    public Step step1(JdbcBatchItemWriter<List<Screenshot>> writer) {
         return stepBuilderFactory.get("step1")
-                .<Keyword, Keyword> chunk(10)
+                .<Keyword, List<Screenshot>> chunk(10)
                 .reader(reader())
                 .processor(processor())
                 .writer(writer)

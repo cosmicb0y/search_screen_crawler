@@ -7,9 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Keyword {
+public class Screenshot {
     private String area;
-    private String query;
     private String type;
-    private int rank;
+    private String filePath;
 }

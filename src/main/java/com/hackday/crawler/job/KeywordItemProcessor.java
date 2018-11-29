@@ -45,6 +45,8 @@ public class KeywordItemProcessor implements ItemProcessor<Keyword, List<Screens
 
         List<WebElement> elements = driver.findElements(By.xpath("//div[@data-dss-logarea='" + keyword.getArea() + "']"));
 
+        Thread.sleep(200);
+
         if (elements.size() == 0) {
             if (!checker.containsKey(keyword.getArea() + keyword.getType())) {
                 checker.put(keyword.getArea() + keyword.getArea(), false);
@@ -53,8 +55,8 @@ public class KeywordItemProcessor implements ItemProcessor<Keyword, List<Screens
         }
 
         List<Screenshot> screenshots = new ArrayList<>();
-        for (int i = 1; i < elements.size(); i++) {
-            String filePath = "/Users/cosmicboy/IdeaProjects/screenshot/" + keyword.getQuery() + i +".png";
+        for (int i = 0; i < elements.size(); i++) {
+            String filePath = "/Users/cosmicboy/IdeaProjects/screenshot/" + keyword.getQuery() + (i + 1) +".png";
             FileUtils.copyFile(elements.get(i).getScreenshotAs(OutputType.FILE), new File(filePath));
             screenshots.add(new Screenshot(keyword.getArea(), keyword.getType(), filePath));
         }

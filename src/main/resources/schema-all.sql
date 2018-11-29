@@ -2,7 +2,6 @@ DROP TABLE screenshots IF EXISTS;
 DROP TABLE paths IF EXISTS;
 
 CREATE TABLE screenshots (
-  id BIGINT IDENTITY NOT NULL PRIMARY KEY,
   area VARCHAR(20),
   type VARCHAR(20),
   num INT

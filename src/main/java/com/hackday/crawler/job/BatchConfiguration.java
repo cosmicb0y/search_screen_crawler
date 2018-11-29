@@ -2,6 +2,7 @@ package com.hackday.crawler.job;
 
 import com.hackday.crawler.domain.Keyword;
 import com.hackday.crawler.domain.Screenshot;
+import org.apache.commons.dbcp.BasicDataSource;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
@@ -18,8 +19,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
+import javax.xml.crypto.Data;
 import java.util.HashMap;
 import java.util.List;
 
@@ -56,15 +59,22 @@ public class BatchConfiguration {
         return new KeywordItemProcessor(checker());
     }
 
-    //need modify
     @Bean
-    public JdbcBatchItemWriter<List<Screenshot>> writer(DataSource dataSource) {
+    public JdbcTemplate jdbcTemplate() {
+        BasicDataSource source = new BasicDataSource();
 
-        return new JdbcBatchItemWriterBuilder<List<Screenshot>>()
-                .itemSqlParameterSourceProvider(new BeanPropertyItemSqlParameterSourceProvider<>())
-                .sql("INSERT INTO screenshot (area, type, filePath, noExist) VALUES (:area, :type, :filePath, :noExist)")
-                .dataSource(dataSource)
-                .build();
+        source.setDriverClassName("com.mysql.cj.jdbc.Driver");
+        source.setUsername("worker");
+        source.setPassword("Hackday2018!");
+        source.setUrl("jdbc:mysql://106.10.34.6:3306/hyowon?characterEncoding=UTF-8&serverTimezone=UTC");
+
+        return new JdbcTemplate(source);
+
+    }
+
+    @Bean
+    public ScreenshotWriter screenshotWriter(JdbcTemplate jdbcTemplate) {
+        return new ScreenshotWriter(jdbcTemplate);
 
     }
     // end::readerwriterprocessor[]
@@ -81,7 +91,7 @@ public class BatchConfiguration {
     }
 
     @Bean
-    public Step step1(JdbcBatchItemWriter<List<Screenshot>> writer) {
+    public Step step1(ScreenshotWriter writer) {
         return stepBuilderFactory.get("step1")
                 .<Keyword, List<Screenshot>> chunk(10)
                 .reader(reader())
